@@ -63,6 +63,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
 
     private static final class ConsistentHashSelector<T> {
 
+        /**
+         * use TreeMap to  store the virtual node of invokers
+         */
         private final TreeMap<Long, Invoker<T>> virtualInvokers;
 
         private final int replicaNumber;
@@ -75,7 +78,9 @@ public class ConsistentHashLoadBalance extends AbstractLoadBalance {
             this.virtualInvokers = new TreeMap<Long, Invoker<T>>();
             this.identityHashCode = identityHashCode;
             URL url = invokers.get(0).getUrl();
+            //get the replica number ,default value is 160
             this.replicaNumber = url.getMethodParameter(methodName, HASH_NODES, 160);
+            //get the index value of the parameters which participating in the hash calculation, and the first parameter is hashed by default
             String[] index = Constants.COMMA_SPLIT_PATTERN.split(url.getMethodParameter(methodName, HASH_ARGUMENTS, "0"));
             argumentIndex = new int[index.length];
             for (int i = 0; i < index.length; i++) {
